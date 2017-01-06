@@ -18,8 +18,8 @@ int dropTimer;
 int moveTimer;
 
 bool gameRunning = false;
-Piece bag[7];
 int bagIndex = 7;
+Piece bag[7];
 Piece curPiece;
 bool pieceActive = false;
 
@@ -52,8 +52,27 @@ bool isValid(Piece& piece) {
   return true;
 }
 
+void clearLine(int clearRow) {
+  for(int row = clearRow; row > 0; --row) {
+    for(int col = 0; col < BOARD_WIDTH; ++col) {
+      board[row][col] = board[row-1][col];
+    }
+  }
+}
+
 void clearLines() {
-  //TODO: Implement this  
+  for(int row = 2; row < BOARD_HEIGHT; ++row) {
+    bool lineComplete = true;
+    for(int col = 0; col < BOARD_WIDTH; ++col) {
+      if(board[row][col] == 0) {
+        lineComplete = false;
+      }
+    }
+
+    if(lineComplete) {
+      clearLine(row);
+    }
+  }
 }
 
 void dropPiece(Piece& piece) {
@@ -110,15 +129,15 @@ void handleInput() {
       }
     }
     if(arduboy.pressed(A_BUTTON)) {
-      curPiece.rotateCW();
-      if(!isValid(curPiece)) {
-        curPiece.rotateCCW();
-      }
-    }
-    if(arduboy.pressed(B_BUTTON)) {
       curPiece.rotateCCW();
       if(!isValid(curPiece)) {
         curPiece.rotateCW();
+      }
+    }
+    if(arduboy.pressed(B_BUTTON)) {
+      curPiece.rotateCW();
+      if(!isValid(curPiece)) {
+        curPiece.rotateCCW();
       }
     }
   }
