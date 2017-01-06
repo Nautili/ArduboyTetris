@@ -2,21 +2,20 @@
 #ifndef PIECE_H
 #define PIECE_H
 
-class Shape {
-  public:
-    Shape();
-    int width;
-    unsigned char** shapeArray;
-};
-
 class Piece {
   public:
-    Piece();
+    int xPos;
+    int yPos;
+    int width;
+    unsigned char shape[4][4];
+    
+    Piece(int, int);
     void tryRotateCW();
     void tryRotateCCW();
     
   private:
-    Shape shape;
+    static const unsigned char possibleShapes[][4][4];
+    static const unsigned char possibleWidths[];
 };
 
 #endif
