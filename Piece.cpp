@@ -47,11 +47,14 @@ const unsigned char Piece::possibleShapes[][4][4] = {
 };  
 const unsigned char Piece::possibleWidths[] = {4, 3, 3, 2, 3, 3, 3};
 
-Piece::Piece(int x, int y) {
+Piece::Piece() {
+  
+}
+
+Piece::Piece(int x, int y, int index) {
   xPos = x;
   yPos = y;
 
-  int index = random(7);
   for(int i = 0; i < 4; ++i) {
     for(int j = 0; j < 4; ++j) {
       shape[i][j] = possibleShapes[index][i][j];
@@ -90,12 +93,12 @@ void flipRows(unsigned char a[4][4], int width) {
   }
 }
 
-void Piece::tryRotateCW() {
+void Piece::rotateCW() {
   transpose(shape, width);
   flipColumns(shape, width);
 }
 
-void Piece::tryRotateCCW() {
+void Piece::rotateCCW() {
   transpose(shape, width);
   flipRows(shape, width);
 }

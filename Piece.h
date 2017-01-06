@@ -8,10 +8,11 @@ class Piece {
     int yPos;
     int width;
     unsigned char shape[4][4];
-    
-    Piece(int, int);
-    void tryRotateCW();
-    void tryRotateCCW();
+
+    Piece();
+    Piece(int, int, int);
+    void rotateCW();
+    void rotateCCW();
     
   private:
     static const unsigned char possibleShapes[][4][4];
