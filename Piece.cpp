@@ -51,9 +51,9 @@ Piece::Piece() {
   
 }
 
-Piece::Piece(int x, int y, int index) {
-  xPos = x;
-  yPos = y;
+Piece::Piece(int col, int row, int index) {
+  this->col = col;
+  this->row = row;
 
   for(int i = 0; i < 4; ++i) {
     for(int j = 0; j < 4; ++j) {
@@ -64,7 +64,7 @@ Piece::Piece(int x, int y, int index) {
 }
 
 void transpose(unsigned char a[4][4], int width) {
-  for(int i = 0; i < width; ++i) {
+  for(int i = 0; i < width - 1; ++i) {
     for(int j = i + 1; j < width; ++j) {
       unsigned char temp = a[i][j];
       a[i][j] = a[j][i];
@@ -77,8 +77,8 @@ void flipColumns(unsigned char a[4][4], int width) {
   for(int i = 0; i < width; ++i) {
     for(int j = 0; j < width / 2; ++j) {
       unsigned char temp = a[i][j];
-      a[i][j] = a[i][width - j];
-      a[i][width - j] = temp;
+      a[i][j] = a[i][width - j - 1];
+      a[i][width - j - 1] = temp;
     }
   }
 }
@@ -87,8 +87,8 @@ void flipRows(unsigned char a[4][4], int width) {
   for(int j = 0; j < width; ++j) {
     for(int i = 0; i < width / 2; ++i) {
       unsigned char temp = a[i][j];
-      a[i][j] = a[width - i][j];
-      a[width - i][j] = temp;
+      a[i][j] = a[width - i - 1][j];
+      a[width - i - 1][j] = temp;
     }
   }
 }

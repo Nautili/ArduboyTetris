@@ -8,7 +8,7 @@ const int BOARD_WIDTH = 10;
 unsigned char board[BOARD_HEIGHT][BOARD_WIDTH];
 
 const int BOARD_X = 20;
-const int BOARD_Y = 1;
+const int BOARD_Y = 2;
 const int CELL_SIZE = 3;
 
 const int INIT_DROP_DELAY = 60; // delay in frames
@@ -24,13 +24,26 @@ Piece curPiece;
 bool pieceActive = false;
 
 bool inBounds(Piece& piece) {
-  return (piece.xPos >= 0) && ((piece.xPos + piece.width) <= BOARD_WIDTH);
+  for(int row = 0; row < piece.width; ++row) {
+    for(int col = 0; col < piece.width; ++col) {
+      if(piece.shape[row][col] == 1 && 
+         ((piece.col + col < 0) || (piece.col + col >= BOARD_WIDTH))) 
+      {
+        return false;    
+      }
+    }
+  }
+  return true;
 }
 
 bool isValid(Piece& piece) {
+  if(!inBounds(piece)) {
+    return false;
+  }
+  
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
-      if((piece.shape[i][j] & board[piece.xPos + i][piece.yPos + j]) == 1) {
+      if((piece.shape[i][j] == 1 && board[piece.row + i][piece.col + j]) == 1) {
         return false;
       }
     }
@@ -39,12 +52,16 @@ bool isValid(Piece& piece) {
   return true;
 }
 
+void clearLines() {
+  //TODO: Implement this  
+}
+
 void dropPiece(Piece& piece) {
   bool isDropped = false;
-  for(int i = 0; i < piece.width; ++i) {
-    for(int j = 0; j < piece.width; ++j) {
-      if((piece.shape[i][j] == 1) && 
-        ((board[piece.xPos + i][piece.yPos + j + 1]) == 1) || (piece.yPos + j + 1 >= BOARD_HEIGHT)) 
+  for(int row = 0; row < piece.width; ++row) {
+    for(int col = 0; col < piece.width; ++col) {
+      if((piece.shape[row][col] == 1) && 
+        ((board[piece.row + row + 1][piece.col + col] == 1) || (piece.row + row + 1 >= BOARD_HEIGHT)))
       {
         isDropped = true;
       }
@@ -54,47 +71,54 @@ void dropPiece(Piece& piece) {
   if(isDropped) {
     for(int i = 0; i < piece.width; ++i) {
       for(int j = 0; j < piece.width; ++j) {
-        board[piece.xPos + i][piece.yPos + j] = piece.shape[i][j];
+        if(piece.shape[i][j] == 1) {
+          board[piece.row + i][piece.col + j] = 1;
+        }
       }
     }
     pieceActive = false;
+    clearLines();
   }
-  
-  piece.yPos++;
+  else {
+    piece.row++;
+  }
 }
 
+//TODO: Polish inputs
 void handleInput() {
   if(moveTimer <= 0) {
     moveTimer = MOVE_DELAY;
     if(arduboy.pressed(LEFT_BUTTON)) {
-      curPiece.xPos--;
-      if(!inBounds) {
-        curPiece.xPos++;
+      curPiece.col--;
+      if(!isValid(curPiece)) {
+        curPiece.col++;
       }
     }
-    else if(arduboy.pressed(RIGHT_BUTTON)) {
-      curPiece.xPos++;
-      if(!inBounds) {
-        curPiece.xPos--;
+    if(arduboy.pressed(RIGHT_BUTTON)) {
+      curPiece.col++;
+      if(!isValid(curPiece)) {
+        curPiece.col--;
       }
     }
-    else if(arduboy.pressed(DOWN_BUTTON)) {
+    if(arduboy.pressed(DOWN_BUTTON)) {
       dropPiece(curPiece);
       dropTimer = dropDelay;
     }
-    else if(arduboy.pressed(UP_BUTTON)) {
-      //TODO: Add autodrop
-    }
-    else if(arduboy.pressed(A_BUTTON)) {
-      curPiece.rotateCCW();
-      if(!isValid(curPiece)) {
-        curPiece.rotateCW();
+    if(arduboy.pressed(UP_BUTTON)) {
+      while(pieceActive) {
+        dropPiece(curPiece);
       }
     }
-    else if(arduboy.pressed(B_BUTTON)) {
+    if(arduboy.pressed(A_BUTTON)) {
       curPiece.rotateCW();
       if(!isValid(curPiece)) {
         curPiece.rotateCCW();
+      }
+    }
+    if(arduboy.pressed(B_BUTTON)) {
+      curPiece.rotateCCW();
+      if(!isValid(curPiece)) {
+        curPiece.rotateCW();
       }
     }
   }
@@ -106,7 +130,10 @@ void getNewBag(Piece bag[]) {
   }
 
   for(int i = 0; i < 7; ++i) {
-    bag[i] = bag[random(7)];
+    int randIndex = random(7);
+    Piece temp = bag[randIndex];
+    bag[randIndex] = bag[i];
+    bag[i] = temp;
   }
 }
 
@@ -132,10 +159,12 @@ void manageGame() {
 }
 
 void drawBoard() {
-  for(int i = 0; i < BOARD_HEIGHT; ++i) {
+  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, BOARD_WIDTH * CELL_SIZE + 4, (BOARD_HEIGHT - 1) * CELL_SIZE + 1, 1);
+  
+  for(int i = 2; i < BOARD_HEIGHT; ++i) {
     for(int j = 0; j < BOARD_WIDTH; ++j) {
       if(board[i][j] == 1) {
-        arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
+        arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
       }
     }
   }
@@ -145,7 +174,7 @@ void drawPieces(Piece& piece) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
-        arduboy.drawRect(BOARD_X + (piece.xPos + i) * CELL_SIZE, BOARD_Y + (piece.yPos + j) * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
+        arduboy.drawRect(BOARD_X + (piece.col + j) * CELL_SIZE, BOARD_Y + (piece.row + (i-2)) * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
       }
     }
   }

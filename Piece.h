@@ -4,8 +4,8 @@
 
 class Piece {
   public:
-    int xPos;
-    int yPos;
+    int col;
+    int row;
     int width;
     unsigned char shape[4][4];
 
