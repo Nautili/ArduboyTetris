@@ -18,6 +18,7 @@ int dropTimer;
 int moveTimer;
 
 bool gameRunning = false;
+bool gameOver = false;
 int bagIndex = 7;
 Piece bag[7];
 Piece curPiece;
@@ -88,25 +89,38 @@ void dropPiece(Piece& piece) {
   }
 
   if(isDropped) {
+    bool inBounds = false;
     for(int i = 0; i < piece.width; ++i) {
       for(int j = 0; j < piece.width; ++j) {
         if(piece.shape[i][j] == 1) {
           board[piece.row + i][piece.col + j] = 1;
+
+          if(piece.row + i > 1) {
+            inBounds = true;
+          }
         }
       }
     }
     pieceActive = false;
-    clearLines();
+    if(!inBounds) {
+      gameRunning = false;
+      gameOver = true;
+    }
+    else {
+      clearLines();
+    }
   }
   else {
     piece.row++;
   }
 }
 
-//TODO: Polish inputs
 void handleInput() {
   if(moveTimer <= 0) {
-    moveTimer = MOVE_DELAY;
+    if(arduboy.buttonsState() > 0) {
+      moveTimer = MOVE_DELAY;
+    }
+    
     if(arduboy.pressed(LEFT_BUTTON)) {
       curPiece.col--;
       if(!isValid(curPiece)) {
@@ -127,6 +141,7 @@ void handleInput() {
       while(pieceActive) {
         dropPiece(curPiece);
       }
+      dropTimer = dropDelay;
     }
     if(arduboy.pressed(A_BUTTON)) {
       curPiece.rotateCCW();
@@ -160,6 +175,9 @@ void manageGame() {
   dropTimer--;
   moveTimer--;
 
+  //TODO: handle start
+  //TODO: handle game over
+
   if(bagIndex > 6) {
     getNewBag(bag);
     bagIndex = 0;
@@ -169,7 +187,7 @@ void manageGame() {
     curPiece = bag[bagIndex++];
     pieceActive = true;
   }
-  
+
   handleInput();
   if(dropTimer <= 0) {
     dropPiece(curPiece);
@@ -219,13 +237,6 @@ void loop() {
   if(!arduboy.nextFrame()) {
     return;
   }
-  
-  //TODO: Handle start
-  /*while(!gameRunning) {
-    if(arduboy.pressed(B_BUTTON)) {
-      gameRunning = true;
-    }
-  }*/
   
   manageGame();
   arduboy.clear();
