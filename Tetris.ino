@@ -1,13 +1,14 @@
 #include "Arduboy.h"
 #include "Piece.h"
+#include "Background.h"
 
 Arduboy arduboy;
 
 const int BOARD_HEIGHT = 22;
 const int BOARD_WIDTH = 10;
-unsigned char board[BOARD_HEIGHT][BOARD_WIDTH];
+unsigned char board[BOARD_HEIGHT][BOARD_WIDTH]; //TODO: Convert to less memory intensive data structure
 
-const int BOARD_X = 20;
+const int BOARD_X = 25;
 const int BOARD_Y = 2;
 const int CELL_SIZE = 3;
 
@@ -23,6 +24,9 @@ int bagIndex = 7;
 Piece bag[7];
 Piece curPiece;
 bool pieceActive = false;
+
+int level = 1;
+int score = 0;
 
 bool inBounds(Piece& piece) {
   for(int row = 0; row < piece.width; ++row) {
@@ -102,6 +106,7 @@ void dropPiece(Piece& piece) {
       }
     }
     pieceActive = false;
+    
     if(!inBounds) {
       gameRunning = false;
       gameOver = true;
@@ -172,11 +177,11 @@ void getNewBag(Piece bag[]) {
 }
 
 void manageGame() {
-  dropTimer--;
-  moveTimer--;
-
   //TODO: handle start
   //TODO: handle game over
+  //TODO: handle score/speedup
+  dropTimer--;
+  moveTimer--;
 
   if(bagIndex > 6) {
     getNewBag(bag);
@@ -195,13 +200,17 @@ void manageGame() {
   }
 }
 
+void drawBackground() {
+  arduboy.drawBitmap(0, 0, background, WIDTH, HEIGHT, WHITE);
+}
+
 void drawBoard() {
-  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, BOARD_WIDTH * CELL_SIZE + 4, (BOARD_HEIGHT - 1) * CELL_SIZE + 1, 1);
+  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, BOARD_WIDTH * CELL_SIZE + 4, (BOARD_HEIGHT - 1) * CELL_SIZE + 1, WHITE);
   
   for(int i = 2; i < BOARD_HEIGHT; ++i) {
     for(int j = 0; j < BOARD_WIDTH; ++j) {
       if(board[i][j] == 1) {
-        arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
+        arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
   }
@@ -211,16 +220,45 @@ void drawPieces(Piece& piece) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
-        arduboy.drawRect(BOARD_X + (piece.col + j) * CELL_SIZE, BOARD_Y + (piece.row + (i-2)) * CELL_SIZE, CELL_SIZE, CELL_SIZE, 1);
+        arduboy.drawRect(BOARD_X + (piece.col + j) * CELL_SIZE, BOARD_Y + (piece.row + (i-2)) * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
   }
+}
+
+void drawGameInfo() {
+  arduboy.drawRect(60, 0, 47, 11, WHITE);
+  arduboy.drawRect(60, 12, 47, 52, WHITE);
+  arduboy.setCursor(66, 2);
+  arduboy.print("Lvl:");
+  arduboy.print(level);
+}
+
+void drawOverlay() {
+  //TODO: Draw full overlay
+  if(gameOver) {
+    //show game over
+    arduboy.fillRect(BOARD_X - 12, BOARD_Y + 23, 55, 10, BLACK);
+    arduboy.setCursor(BOARD_X - 11, BOARD_Y + 24);
+    arduboy.print("Game Over");
+  }
+}
+
+void drawFrame() {
+  arduboy.clear();
+  drawBackground();
+  drawBoard();
+  drawPieces(curPiece);
+  drawGameInfo();
+  drawOverlay();
+  arduboy.display();
 }
 
 void setup() {
   arduboy.begin();
   arduboy.setFrameRate(60);
   arduboy.display();
+  arduboy.initRandomSeed();
   
   dropDelay = INIT_DROP_DELAY;
   dropTimer = dropDelay;
@@ -239,8 +277,5 @@ void loop() {
   }
   
   manageGame();
-  arduboy.clear();
-  drawBoard();
-  drawPieces(curPiece);
-  arduboy.display();
+  drawFrame();
 }
