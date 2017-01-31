@@ -280,7 +280,7 @@ void drawBoard() {
   }
 }
 
-void drawPieces(Piece& piece) {
+void drawPiece(Piece& piece) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
@@ -321,7 +321,7 @@ void drawFrame() {
   arduboy.clear();
   drawBackground();
   drawBoard();
-  drawPieces(curPiece);
+  drawPiece(curPiece);
   drawGameInfo();
   if(gameOver) {
     drawGameOver();
