@@ -13,11 +13,14 @@ const int BOARD_Y = 2;
 const int CELL_SIZE = 3;
 
 const int INIT_DROP_DELAY = 60; // delay in frames
-const int MOVE_DELAY = 10;
+const int MOVE_DELAY = 8;
 const int FASTEST_LEVEL = 10;
 int dropDelay;
 int dropTimer;
 int moveTimer;
+
+const int MAX_GAME_OVER_DELAY = 30;
+int gameOverDelay;
 
 bool gameRunning = false;
 bool gameOver = false;
@@ -26,9 +29,9 @@ Piece bag[7];
 Piece curPiece;
 bool pieceActive = false;
 
-int level = 1;
-int clearedLines = 0;
-int score = 0;
+int level;
+int clearedLines;
+int score;
 
 bool inBounds(Piece& piece) {
   for(int row = 0; row < piece.width; ++row) {
@@ -212,9 +215,35 @@ void getNewBag(Piece bag[]) {
   }
 }
 
+void initGame() {
+  level = 1;
+  clearedLines = 0;
+  score = 0;
+  bagIndex = 7;
+  gameOverDelay = MAX_GAME_OVER_DELAY;
+  
+  dropDelay = INIT_DROP_DELAY;
+  dropTimer = dropDelay;
+  moveTimer = MOVE_DELAY;
+  
+  for(int i = 0; i < BOARD_HEIGHT; ++i) {
+    for(int j = 0; j < BOARD_WIDTH; ++j) {
+      board[i][j] = 0;
+    }
+  }
+}
+
 void manageGame() {
-  //TODO: handle start
-  //TODO: handle game over
+  //TODO: handle start screen
+  if(gameOver) {
+    gameOverDelay--;
+    if(arduboy.buttonsState() > 0 && gameOverDelay <= 0) {
+      gameOver = false;
+      initGame();
+    }
+    return;
+  }
+  
   dropTimer--;
   moveTimer--;
 
@@ -278,14 +307,14 @@ void drawGameInfo() {
   arduboy.print(score);
 }
 
-void drawOverlay() {
-  //TODO: Draw full overlay
-  if(gameOver) {
-    //show game over
-    arduboy.fillRect(BOARD_X - 12, BOARD_Y + 23, 55, 10, BLACK);
-    arduboy.setCursor(BOARD_X - 11, BOARD_Y + 24);
-    arduboy.print("Game Over");
-  }
+void drawGameOver() {
+  arduboy.fillRect(WIDTH / 2 - 28, HEIGHT / 2 - 14, 57, 10, BLACK);
+  arduboy.setCursor(WIDTH / 2 - 27, HEIGHT / 2 - 13);
+  arduboy.print("Game Over");
+  arduboy.setCursor(WIDTH / 2 - 42, HEIGHT / 2 - 4);
+  arduboy.print("Press any Button");
+  arduboy.setCursor(WIDTH / 2 - 30, HEIGHT / 2 + 4);
+  arduboy.print("To Restart");
 }
 
 void drawFrame() {
@@ -294,7 +323,9 @@ void drawFrame() {
   drawBoard();
   drawPieces(curPiece);
   drawGameInfo();
-  drawOverlay();
+  if(gameOver) {
+    drawGameOver();
+  }
   arduboy.display();
 }
 
@@ -304,15 +335,7 @@ void setup() {
   arduboy.display();
   arduboy.initRandomSeed();
   
-  dropDelay = INIT_DROP_DELAY;
-  dropTimer = dropDelay;
-  moveTimer = MOVE_DELAY;
-  
-  for(int i = 0; i < BOARD_HEIGHT; ++i) {
-    for(int j = 0; j < BOARD_WIDTH; ++j) {
-      board[i][j] = 0;
-    }
-  }
+  initGame();
 }
 
 void loop() {
