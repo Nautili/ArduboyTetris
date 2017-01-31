@@ -2,8 +2,6 @@
 #include "Piece.h"
 #include "Background.h"
 
-//TODO: Investigate loading issue
-
 Arduboy arduboy;
 
 const int BOARD_HEIGHT = 22;
@@ -271,13 +269,13 @@ void drawGameInfo() {
   arduboy.print(level);
 
   arduboy.setCursor(66, 14);
-  arduboy.println("Lines:");
+  arduboy.print("Lines:");
   arduboy.setCursor(66, 24);
-  arduboy.println(clearedLines);
+  arduboy.print(clearedLines);
   arduboy.setCursor(66, 34);
-  arduboy.println("Score:");
+  arduboy.print("Score:");
   arduboy.setCursor(66, 44);
-  arduboy.println(score);
+  arduboy.print(score);
 }
 
 void drawOverlay() {
