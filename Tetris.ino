@@ -2,6 +2,8 @@
 #include "Piece.h"
 #include "Background.h"
 
+//TODO: Investigate loading issue
+
 Arduboy arduboy;
 
 const int BOARD_HEIGHT = 22;
@@ -14,6 +16,7 @@ const int CELL_SIZE = 3;
 
 const int INIT_DROP_DELAY = 60; // delay in frames
 const int MOVE_DELAY = 10;
+const int FASTEST_LEVEL = 10;
 int dropDelay;
 int dropTimer;
 int moveTimer;
@@ -26,6 +29,7 @@ Piece curPiece;
 bool pieceActive = false;
 
 int level = 1;
+int clearedLines = 0;
 int score = 0;
 
 bool inBounds(Piece& piece) {
@@ -57,6 +61,28 @@ bool isValid(Piece& piece) {
   return true;
 }
 
+void addScore(int numLines) {
+  int points;
+  switch(numLines) {
+    case 1:
+      points = 40 * level;
+      break;
+    case 2:
+      points = 100 * level;
+      break;
+    case 3:
+      points = 300 * level;
+      break;
+    case 4:
+      points = 1200 * level;
+      break;
+    default:
+      points = 0;
+  }
+
+  score += points;
+}
+
 void clearLine(int clearRow) {
   for(int row = clearRow; row > 0; --row) {
     for(int col = 0; col < BOARD_WIDTH; ++col) {
@@ -66,6 +92,8 @@ void clearLine(int clearRow) {
 }
 
 void clearLines() {
+  int currentClears = 0;
+  
   for(int row = 2; row < BOARD_HEIGHT; ++row) {
     bool lineComplete = true;
     for(int col = 0; col < BOARD_WIDTH; ++col) {
@@ -76,8 +104,16 @@ void clearLines() {
 
     if(lineComplete) {
       clearLine(row);
+      currentClears++;
     }
   }
+
+  addScore(currentClears);
+  clearedLines += currentClears;
+  level = (clearedLines / 10) + 1;
+
+  float speedup = (FASTEST_LEVEL - level + 1) / (float)FASTEST_LEVEL;
+  dropDelay = max(INIT_DROP_DELAY * speedup, 0);
 }
 
 void dropPiece(Piece& piece) {
@@ -138,16 +174,18 @@ void handleInput() {
         curPiece.col--;
       }
     }
+    
     if(arduboy.pressed(DOWN_BUTTON)) {
       dropPiece(curPiece);
       dropTimer = dropDelay;
     }
-    if(arduboy.pressed(UP_BUTTON)) {
+    else if(arduboy.pressed(UP_BUTTON)) {
       while(pieceActive) {
         dropPiece(curPiece);
       }
       dropTimer = dropDelay;
     }
+    
     if(arduboy.pressed(A_BUTTON)) {
       curPiece.rotateCCW();
       if(!isValid(curPiece)) {
@@ -179,7 +217,6 @@ void getNewBag(Piece bag[]) {
 void manageGame() {
   //TODO: handle start
   //TODO: handle game over
-  //TODO: handle score/speedup
   dropTimer--;
   moveTimer--;
 
@@ -232,6 +269,15 @@ void drawGameInfo() {
   arduboy.setCursor(66, 2);
   arduboy.print("Lvl:");
   arduboy.print(level);
+
+  arduboy.setCursor(66, 14);
+  arduboy.println("Lines:");
+  arduboy.setCursor(66, 24);
+  arduboy.println(clearedLines);
+  arduboy.setCursor(66, 34);
+  arduboy.println("Score:");
+  arduboy.setCursor(66, 44);
+  arduboy.println(score);
 }
 
 void drawOverlay() {
