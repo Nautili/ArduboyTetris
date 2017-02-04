@@ -31,7 +31,7 @@ bool pieceActive = false;
 
 int level;
 int clearedLines;
-int score;
+unsigned long score;
 
 bool inBounds(Piece& piece) {
   for(int row = 0; row < piece.width; ++row) {
