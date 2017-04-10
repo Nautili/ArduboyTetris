@@ -24,9 +24,10 @@ int gameOverDelay;
 
 bool gameRunning = false;
 bool gameOver = false;
-int bagIndex = 7;
+int bagIndex = 0;
 Piece bag[7];
 Piece curPiece;
+Piece nextPiece;
 bool pieceActive = false;
 
 int level;
@@ -202,7 +203,7 @@ void handleInput() {
   }
 }
 
-void getNewBag(Piece bag[]) {
+void getNewBag() {
   for(int i = 0; i < 7; ++i) {
     bag[i] = Piece(BOARD_WIDTH/2 - 1, 0, i);
   }
@@ -219,7 +220,9 @@ void initGame() {
   level = 1;
   clearedLines = 0;
   score = 0;
-  bagIndex = 7;
+  bagIndex = 0;
+  getNewBag();
+  nextPiece = bag[0];
   gameOverDelay = MAX_GAME_OVER_DELAY;
   
   dropDelay = INIT_DROP_DELAY;
@@ -247,13 +250,13 @@ void manageGame() {
   dropTimer--;
   moveTimer--;
 
-  if(bagIndex > 6) {
-    getNewBag(bag);
-    bagIndex = 0;
-  }
-
   if(!pieceActive) {
-    curPiece = bag[bagIndex++];
+    bagIndex = (bagIndex + 1) % 7;
+    curPiece = nextPiece;
+    nextPiece = bag[bagIndex];
+    if(bagIndex == 6) {
+      getNewBag();
+    }
     pieceActive = true;
   }
 
@@ -275,6 +278,16 @@ void drawBoard() {
     for(int j = 0; j < BOARD_WIDTH; ++j) {
       if(board[i][j] == 1) {
         arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
+      }
+    }
+  }
+}
+
+void drawNextPiece(Piece& piece, int x, int y) {
+  for(int i = 0; i < piece.width; ++i) {
+    for(int j = 0; j < piece.width; ++j) {
+      if(piece.shape[i][j] == 1) {
+        arduboy.drawRect(x + j * CELL_SIZE, y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
   }
@@ -305,6 +318,8 @@ void drawGameInfo() {
   arduboy.print("Score:");
   arduboy.setCursor(66, 44);
   arduboy.print(score);
+  arduboy.setCursor(66, 54);
+  drawNextPiece(nextPiece, 80, 54);
 }
 
 void drawGameOver() {
