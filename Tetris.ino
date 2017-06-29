@@ -214,22 +214,16 @@ void handleInput() {
       }
     }
     if(arduboy.pressed(B_BUTTON)) {
-      delay(dropDelay);
       if (holding = false) {
-        bagIndex = (bagIndex + 1) % 7;
         heldPiece = curPiece;
-        curPiece = nextPiece;
-        nextPiece = bag[bagIndex];
-        if(bagIndex == 6) {
-          getNewBag();
-          }    
-        }
-      else {
-        tmp = heldPiece;
-        heldPiece = curPiece;
-        curPiece = tmp;
-        }
+        } else {
+            tmp = heldPiece;
+            heldPiece = curPiece;
+            curPiece = tmp;
+            }
       holding = true;
+      pieceActive = false;   
+      delay(dropDelay);
     }
   }
 }
