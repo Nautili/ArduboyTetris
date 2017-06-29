@@ -103,5 +103,7 @@ void Piece::rotateCCW() {
   flipRows(shape, width);
 }
 
-
+void Piece::hold() {
+  
+}
 

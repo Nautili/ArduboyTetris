@@ -169,7 +169,7 @@ void handleInput() {
       while (!(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ))
         delay(1);
     }
-    
+
     if(arduboy.pressed(LEFT_BUTTON)) {
       curPiece.col--;
       if(!isValid(curPiece)) {
@@ -201,10 +201,8 @@ void handleInput() {
       }
     }
     if(arduboy.pressed(B_BUTTON)) {
-      curPiece.rotateCW();
-      if(!isValid(curPiece)) {
-        curPiece.rotateCCW();
-      }
+      curPiece.hold();
+      holding = true 
     }
   }
 }
