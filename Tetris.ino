@@ -186,6 +186,7 @@ void handleInput() {
     if(arduboy.pressed(DOWN_BUTTON)) {
       dropPiece(curPiece);
       dropTimer = dropDelay;
+      score+=level;
     }
     else if(arduboy.pressed(UP_BUTTON)) {
       while(pieceActive) {
