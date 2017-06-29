@@ -164,6 +164,12 @@ void handleInput() {
       moveTimer = MOVE_DELAY;
     }
     
+    if(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ) {
+      delay(10*INIT_DROP_DELAY);
+      while (!(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ))
+        delay(1);
+    }
+    
     if(arduboy.pressed(LEFT_BUTTON)) {
       curPiece.col--;
       if(!isValid(curPiece)) {
