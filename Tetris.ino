@@ -178,7 +178,6 @@ void handleInput() {
 
       delay(10);
     }
-    
     if(arduboy.pressed(LEFT_BUTTON)) {
       curPiece.col--;
       if(!isValid(curPiece)) {
@@ -199,6 +198,7 @@ void handleInput() {
     }
     else if(arduboy.pressed(UP_BUTTON)) {
       while(pieceActive) {
+        score+=level;
         dropPiece(curPiece);
       }
       dropTimer = dropDelay;
