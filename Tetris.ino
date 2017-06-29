@@ -28,7 +28,10 @@ int bagIndex = 0;
 Piece bag[7];
 Piece curPiece;
 Piece nextPiece;
+Piece tmp;
+Piece heldPiece;
 bool pieceActive = false;
+bool holding = false;
 
 int level;
 int clearedLines;
@@ -211,8 +214,22 @@ void handleInput() {
       }
     }
     if(arduboy.pressed(B_BUTTON)) {
-      curPiece.hold();
-      holding = true 
+      delay(dropDelay);
+      if (holding = false) {
+        bagIndex = (bagIndex + 1) % 7;
+        heldPiece = curPiece;
+        curPiece = nextPiece;
+        nextPiece = bag[bagIndex];
+        if(bagIndex == 6) {
+          getNewBag();
+          }    
+        }
+      else {
+        tmp = heldPiece;
+        heldPiece = curPiece;
+        curPiece = tmp;
+        }
+      holding = true;
     }
   }
 }
