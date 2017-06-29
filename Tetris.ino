@@ -165,9 +165,18 @@ void handleInput() {
     }
     
     if(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ) {
+      arduboy.fillRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, BLACK);
+      arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, WHITE);
+      arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
+      arduboy.print("Paused");
+      arduboy.display();
+      
       delay(10*INIT_DROP_DELAY);
-      while (!(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ))
+      while (!(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) )) {
         delay(1);
+      }
+
+      delay(10);
     }
     
     if(arduboy.pressed(LEFT_BUTTON)) {
