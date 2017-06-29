@@ -203,6 +203,7 @@ void handleInput() {
     else if(arduboy.pressed(UP_BUTTON)) {
       while(pieceActive) {
         dropPiece(curPiece);
+        score+=level;
       }
       dropTimer = dropDelay;
     }
@@ -308,7 +309,7 @@ void drawBoard() {
   }
 }
 
-void drawNextPiece(Piece& piece, int x, int y) {
+void drawPieceAt(Piece& piece, int x, int y) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
@@ -334,7 +335,8 @@ void drawGameInfo() {
   arduboy.setCursor(66, 2);
   arduboy.print("Lvl:");
   arduboy.print(level);
-
+  arduboy.setCursor(0, 2);
+  arduboy.print("Hold:");
   arduboy.setCursor(66, 14);
   arduboy.print("Lines:");
   arduboy.setCursor(66, 24);
@@ -344,7 +346,9 @@ void drawGameInfo() {
   arduboy.setCursor(66, 44);
   arduboy.print(score);
   arduboy.setCursor(66, 54);
-  drawNextPiece(nextPiece, 80, 54);
+  drawPieceAt(nextPiece, 80, 54);
+  drawPieceAt(heldPiece, 0, 14);
+  
 }
 
 void drawGameOver() {
@@ -359,7 +363,7 @@ void drawGameOver() {
 
 void drawFrame() {
   arduboy.clear();
-  drawBackground();
+  //drawBackground();
   drawBoard();
   drawPiece(curPiece);
   drawGameInfo();
