@@ -203,6 +203,7 @@ void handleInput() {
     }
     else if(arduboy.pressed(UP_BUTTON)) {
       while(pieceActive) {
+        score+=level;
         dropPiece(curPiece);
         score+=level;
       }
