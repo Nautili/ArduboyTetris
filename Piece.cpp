@@ -93,6 +93,11 @@ void flipRows(unsigned char a[4][4], int width) {
   }
 }
 
+void Piece::resetToTop() {
+  this->col=5;
+  this->row=0;
+}
+
 void Piece::rotateCW() {
   transpose(shape, width);
   flipColumns(shape, width);

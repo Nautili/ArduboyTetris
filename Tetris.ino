@@ -31,7 +31,8 @@ Piece nextPiece;
 Piece tmp;
 Piece heldPiece;
 bool pieceActive = false;
-bool holding = false;
+bool holding = true;
+bool holdPressed = false;
 
 int level;
 int clearedLines;
@@ -215,16 +216,9 @@ void handleInput() {
       }
     }
     if(arduboy.pressed(B_BUTTON)) {
-      if (holding = false) {
-        heldPiece = curPiece;
-        } else {
-            tmp = heldPiece;
-            heldPiece = curPiece;
-            curPiece = tmp;
-            }
-      holding = true;
       pieceActive = false;   
       delay(dropDelay);
+      holdPressed = true;
     }
   }
 }
@@ -248,6 +242,7 @@ void initGame() {
   score = 0;
   bagIndex = 0;
   getNewBag();
+  heldPiece = bag[0];
   nextPiece = bag[0];
   gameOverDelay = MAX_GAME_OVER_DELAY;
   
@@ -275,13 +270,20 @@ void manageGame() {
   
   dropTimer--;
   moveTimer--;
-
-  if(!pieceActive) {
-    bagIndex = (bagIndex + 1) % 7;
-    curPiece = nextPiece;
-    nextPiece = bag[bagIndex];
-    if(bagIndex == 6) {
-      getNewBag();
+  if (!pieceActive) {
+    if (!holdPressed) {
+      bagIndex = (bagIndex + 1) % 7;
+      curPiece = nextPiece;
+      nextPiece = bag[bagIndex];
+      if(bagIndex == 6) {
+        getNewBag();
+      } 
+    } else {
+      curPiece.resetToTop();
+      tmp = heldPiece;
+      heldPiece = curPiece;
+      curPiece = tmp;
+      holdPressed = false;
     }
     pieceActive = true;
   }
@@ -336,7 +338,7 @@ void drawGameInfo() {
   arduboy.print("Lvl:");
   arduboy.print(level);
   arduboy.setCursor(0, 2);
-  arduboy.print("Hold:");
+  arduboy.print("Hold");
   arduboy.setCursor(66, 14);
   arduboy.print("Lines:");
   arduboy.setCursor(66, 24);
@@ -390,3 +392,4 @@ void loop() {
   manageGame();
   drawFrame();
 }
+
