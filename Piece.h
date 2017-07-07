@@ -16,6 +16,7 @@ class Piece {
     void resetToTop(); 
 
   private:
+    int shapeIndex;
     static const unsigned char possibleShapes[][4][4];
     static const unsigned char possibleWidths[];
 };

@@ -54,6 +54,7 @@ Piece::Piece() {
 Piece::Piece(int col, int row, int index) {
   this->col = col;
   this->row = row;
+  shapeIndex = index;
 
   for(int i = 0; i < 4; ++i) {
     for(int j = 0; j < 4; ++j) {
@@ -96,6 +97,12 @@ void flipRows(unsigned char a[4][4], int width) {
 void Piece::resetToTop() {
   this->col=5;
   this->row=0;
+
+  for(int i = 0; i < 4; ++i) {
+    for(int j = 0; j < 4; ++j) {
+      shape[i][j] = possibleShapes[shapeIndex][i][j];
+    }
+  }
 }
 
 void Piece::rotateCW() {
