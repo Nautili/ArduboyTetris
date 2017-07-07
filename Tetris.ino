@@ -6,7 +6,7 @@ Arduboy arduboy;
 
 const int BOARD_HEIGHT = 22;
 const int BOARD_WIDTH = 10;
-unsigned char board[(BOARD_HEIGHT * BOARD_WIDTH / 8) + 1]; //TODO: Convert to less memory intensive data structure
+unsigned char board[(BOARD_HEIGHT * BOARD_WIDTH / 8) + 1]; //Board is a continuous array of bits
 
 const int BOARD_X = 25;
 const int BOARD_Y = 2;
