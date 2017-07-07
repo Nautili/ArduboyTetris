@@ -256,10 +256,10 @@ void initGame() {
   level = 1;
   clearedLines = 0;
   score = 0;
-  bagIndex = 0;
   getNewBag();
-  nextPiece = bag[0];
-  heldPiece = Piece(BOARD_WIDTH/2 - 1, 0, random(7));
+  bagIndex = 1;
+  heldPiece = bag[0];
+  nextPiece = bag[1];
   gameOverDelay = MAX_GAME_OVER_DELAY;
   
   dropDelay = INIT_DROP_DELAY;
