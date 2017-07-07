@@ -6,7 +6,7 @@ Arduboy arduboy;
 
 const int BOARD_HEIGHT = 22;
 const int BOARD_WIDTH = 10;
-unsigned char board[BOARD_HEIGHT][BOARD_WIDTH]; //TODO: Convert to less memory intensive data structure
+unsigned char board[(BOARD_HEIGHT * BOARD_WIDTH / 8) + 1]; //TODO: Convert to less memory intensive data structure
 
 const int BOARD_X = 25;
 const int BOARD_Y = 2;
@@ -38,6 +38,21 @@ int level;
 int clearedLines;
 unsigned long score;
 
+unsigned char getBoardPos(int row, int col) {
+  int pos = BOARD_WIDTH * row + col;
+  return (board[pos / 8] >> (pos % 8)) & 0x1;
+}
+
+void setBoardPos(int row, int col, int val) {
+  int pos = BOARD_WIDTH * row + col;
+  if(val == 1) {
+    board[pos / 8] = bitSet(board[pos / 8], pos % 8);
+  }
+  else {
+    board[pos / 8] = bitClear(board[pos / 8], pos % 8);
+  }
+}
+
 bool inBounds(Piece& piece) {
   for(int row = 0; row < piece.width; ++row) {
     for(int col = 0; col < piece.width; ++col) {
@@ -58,7 +73,7 @@ bool isValid(Piece& piece) {
   
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
-      if((piece.shape[i][j] == 1 && board[piece.row + i][piece.col + j]) == 1) {
+      if(piece.shape[i][j] == 1 && getBoardPos(piece.row + i, piece.col + j) == 1) {
         return false;
       }
     }
@@ -92,7 +107,7 @@ void addScore(int numLines) {
 void clearLine(int clearRow) {
   for(int row = clearRow; row > 0; --row) {
     for(int col = 0; col < BOARD_WIDTH; ++col) {
-      board[row][col] = board[row-1][col];
+      setBoardPos(row, col, getBoardPos(row-1, col));
     }
   }
 }
@@ -103,7 +118,7 @@ void clearLines() {
   for(int row = 2; row < BOARD_HEIGHT; ++row) {
     bool lineComplete = true;
     for(int col = 0; col < BOARD_WIDTH; ++col) {
-      if(board[row][col] == 0) {
+      if(getBoardPos(row, col) == 0) {
         lineComplete = false;
       }
     }
@@ -127,7 +142,7 @@ void dropPiece(Piece& piece) {
   for(int row = 0; row < piece.width; ++row) {
     for(int col = 0; col < piece.width; ++col) {
       if((piece.shape[row][col] == 1) && 
-        ((board[piece.row + row + 1][piece.col + col] == 1) || (piece.row + row + 1 >= BOARD_HEIGHT)))
+        ((getBoardPos(piece.row + row + 1, piece.col + col) == 1) || (piece.row + row + 1 >= BOARD_HEIGHT)))
       {
         isDropped = true;
       }
@@ -139,7 +154,7 @@ void dropPiece(Piece& piece) {
     for(int i = 0; i < piece.width; ++i) {
       for(int j = 0; j < piece.width; ++j) {
         if(piece.shape[i][j] == 1) {
-          board[piece.row + i][piece.col + j] = 1;
+          setBoardPos(piece.row + i, piece.col + j, 1);
 
           if(piece.row + i > 1) {
             inBounds = true;
@@ -251,10 +266,9 @@ void initGame() {
   dropTimer = dropDelay;
   moveTimer = MOVE_DELAY;
   
-  for(int i = 0; i < BOARD_HEIGHT; ++i) {
-    for(int j = 0; j < BOARD_WIDTH; ++j) {
-      board[i][j] = 0;
-    }
+  //clear bytes
+  for(int i = 0; i < (BOARD_HEIGHT * BOARD_WIDTH / 8) + 1; ++i) {
+    board[i] = 0;
   }
 }
 
@@ -307,7 +321,7 @@ void drawBoard() {
   
   for(int i = 2; i < BOARD_HEIGHT; ++i) {
     for(int j = 0; j < BOARD_WIDTH; ++j) {
-      if(board[i][j] == 1) {
+      if(getBoardPos(i, j) == 1) {
         arduboy.drawRect(BOARD_X + j * CELL_SIZE, BOARD_Y + (i - 2) * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
