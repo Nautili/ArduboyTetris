@@ -101,6 +101,8 @@ void addScore(int numLines) {
       {
         points += 400 * level; // 3/2 like Tetris DS
         drawBack2Back();
+      } else {
+        drawTetris();
       }
       break;
     default:
@@ -321,12 +323,21 @@ void manageGame() {
   }
 }
 
+void drawTetris()
+{
+  arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
+  arduboy.print("Tetris!");
+  arduboy.display();
+  delay(INIT_DROP_DELAY);
+}
+
+
 void drawBack2Back()
 {
   arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
   arduboy.print("Back to Back Tetris!");
   arduboy.display();
-  delay(2*INIT_DROP_DELAY);
+  delay(INIT_DROP_DELAY);
 }
 
 void drawBackground() {
