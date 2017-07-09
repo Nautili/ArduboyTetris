@@ -35,6 +35,7 @@ bool holdPressed = false;
 bool holdLocked = false;
 
 int level;
+int prevlines = 0;
 int clearedLines;
 unsigned long score;
 
@@ -86,21 +87,23 @@ void addScore(int numLines) {
   int points;
   switch(numLines) {
     case 1:
-      points = 40 * level;
-      break;
-    case 2:
       points = 100 * level;
       break;
-    case 3:
+    case 2:
       points = 300 * level;
       break;
+    case 3:
+      points = 500 * level;
+      break;
     case 4:
-      points = 1200 * level;
+      points = 800 * level;
+      if (prevlines == 4)
+        points = 400 * level; // 3/2 like Tetris DS
       break;
     default:
       points = 0;
   }
-
+  prevlines = numLines;
   score += points;
 }
 
