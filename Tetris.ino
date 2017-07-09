@@ -98,8 +98,10 @@ void addScore(int numLines) {
     case 4:
       points = 800 * level;
       if (prevlines == 4)
+      {
         points = 400 * level; // 3/2 like Tetris DS
         drawBack2Back();
+      }
       break;
     default:
       points = 0;
@@ -319,7 +321,7 @@ void manageGame() {
 void drawBack2Back()
 {
   arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
-  arduboy.print("Paused");
+  arduboy.print("Back to Back Tetris!");
   arduboy.display();
   delay(10*INIT_DROP_DELAY);
 }
