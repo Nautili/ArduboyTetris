@@ -23,6 +23,7 @@ const int MAX_GAME_OVER_DELAY = 30;
 int gameOverDelay;
 
 bool gameRunning = false;
+bool gamePaused = false;
 bool gameOver = false;
 int bagIndex = 0;
 Piece bag[7];
@@ -184,18 +185,8 @@ void handleInput() {
     }
     
     if(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) ) {
-      arduboy.fillRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, BLACK);
-      arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, WHITE);
-      arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
-      arduboy.print("Paused");
-      arduboy.display();
-      
-      delay(10*INIT_DROP_DELAY);
-      while (!(arduboy.pressed(RIGHT_BUTTON) && arduboy.pressed(LEFT_BUTTON) )) {
-        delay(1);
-      }
-
-      delay(10);
+      gamePaused = !gamePaused;
+      return;
     }
 
     if(arduboy.pressed(LEFT_BUTTON)) {
@@ -233,7 +224,6 @@ void handleInput() {
     }
     if(arduboy.pressed(B_BUTTON) && !holdLocked) {
       pieceActive = false;   
-      delay(dropDelay);
       holdPressed = true;
     }
   }
@@ -379,6 +369,10 @@ void drawGameOver() {
 
 void drawFrame() {
   arduboy.clear();
+  if(gamePaused) {
+    drawPauseScreen();
+    return;
+  }
   drawBackground();
   drawBoard();
   drawPiece(curPiece);
@@ -386,6 +380,14 @@ void drawFrame() {
   if(gameOver) {
     drawGameOver();
   }
+  arduboy.display();
+}
+
+void drawPauseScreen() {
+  arduboy.fillRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, BLACK);
+  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, WHITE);
+  arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
+  arduboy.print("Paused");
   arduboy.display();
 }
 
