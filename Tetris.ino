@@ -367,6 +367,14 @@ void drawGameOver() {
   arduboy.print("To Restart");
 }
 
+void drawPauseScreen() {
+  arduboy.fillRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, BLACK);
+  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, WHITE);
+  arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
+  arduboy.print("Paused");
+  arduboy.display();
+}
+
 void drawFrame() {
   arduboy.clear();
   if(gamePaused) {
@@ -380,14 +388,6 @@ void drawFrame() {
   if(gameOver) {
     drawGameOver();
   }
-  arduboy.display();
-}
-
-void drawPauseScreen() {
-  arduboy.fillRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, BLACK);
-  arduboy.drawRect(BOARD_X - 2, BOARD_Y - 2, 84, 64, WHITE);
-  arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
-  arduboy.print("Paused");
   arduboy.display();
 }
 
