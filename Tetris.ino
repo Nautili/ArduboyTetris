@@ -99,14 +99,17 @@ void addScore(int numLines) {
       points = 800 * level;
       if (prevlines == 4)
       {
-        points = 400 * level; // 3/2 like Tetris DS
+        points += 400 * level; // 3/2 like Tetris DS
         drawBack2Back();
       }
       break;
     default:
       points = 0;
   }
-  prevlines = numLines;
+  if (numLines > 0)
+    {
+      prevlines = numLines;
+    }
   score += points;
 }
 
@@ -323,7 +326,7 @@ void drawBack2Back()
   arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
   arduboy.print("Back to Back Tetris!");
   arduboy.display();
-  delay(10*INIT_DROP_DELAY);
+  delay(2*INIT_DROP_DELAY);
 }
 
 void drawBackground() {
@@ -346,7 +349,7 @@ void drawPieceAt(Piece& piece, int x, int y) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
-        arduboy.drawRect(x + j * CELL_SIZE, y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
+        arduboy.fillRect(x + j * CELL_SIZE, y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
   }
