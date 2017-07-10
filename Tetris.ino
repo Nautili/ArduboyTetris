@@ -360,7 +360,7 @@ void drawPieceAt(Piece& piece, int x, int y) {
   for(int i = 0; i < piece.width; ++i) {
     for(int j = 0; j < piece.width; ++j) {
       if(piece.shape[i][j] == 1) {
-        arduboy.fillRect(x + j * CELL_SIZE, y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
+        arduboy.drawRect(x + j * CELL_SIZE, y + i * CELL_SIZE, CELL_SIZE, CELL_SIZE, WHITE);
       }
     }
   }
