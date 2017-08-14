@@ -318,7 +318,7 @@ void drawTetris()
   arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
   arduboy.print("Tetris!");
   arduboy.display();
-  delay(INIT_DROP_DELAY);
+  delay(dropDelay);
 }
 
 
@@ -327,7 +327,7 @@ void drawBack2Back()
   arduboy.setCursor(WIDTH / 2 - 16, HEIGHT / 2 - 5);
   arduboy.print("Back to Back Tetris!");
   arduboy.display();
-  delay(INIT_DROP_DELAY);
+  delay(dropDelay);
 }
 
 void drawBackground() {
